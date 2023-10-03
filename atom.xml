@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>xiongzhe&#39;s</title>
+  <title>xz</title>
   
-  
+  <subtitle>博客</subtitle>
   <link href="http://example.com/atom.xml" rel="self"/>
   
   <link href="http://example.com/"/>
-  <updated>2023-10-02T10:11:34.296Z</updated>
+  <updated>2023-10-03T08:52:17.955Z</updated>
   <id>http://example.com/</id>
   
   <author>
@@ -17,11 +17,11 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>hello</title>
-    <link href="http://example.com/2023/10/02/hello/"/>
-    <id>http://example.com/2023/10/02/hello/</id>
+    <title>苍穹外买模拟微信支付</title>
+    <link href="http://example.com/posts/hello/"/>
+    <id>http://example.com/posts/hello/</id>
     <published>2023-10-02T10:00:00.000Z</published>
-    <updated>2023-10-02T10:11:34.296Z</updated>
+    <updated>2023-10-03T08:52:17.955Z</updated>
     
     <content type="html"><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>视频中的微信支付需要商家认证才能开通，个人做项目只能模拟支付。<br>思路：<br>首先，用户点击支付，<br>其次，后端接收到请求，绕过微信支付接口，直接更新订单状态。<br>最后，微信小程序前端直接回调支付成功页面 。</p><p>链接: <a href="https://www.bilibili.com/video/BV1TP411v7v6/">黑马程序员苍穹外卖项目视频</a></p><hr><h1 id="微信支付"><a href="#微信支付" class="headerlink" title="微信支付"></a>微信支付</h1><h2 id="修改-orderServiceImpl的payment-方法跳过调用微信支付接口"><a href="#修改-orderServiceImpl的payment-方法跳过调用微信支付接口" class="headerlink" title="修改 orderServiceImpl的payment 方法跳过调用微信支付接口"></a>修改 orderServiceImpl的payment 方法跳过调用微信支付接口</h2><p>修改orderServiceImpl的payment 方法跳过调用微信支付接口</p><p>将原本的调用支付接口注销，并生成空jsonObject</p><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">        <span class="comment">//调用微信支付接口，生成预支付交易单</span></span><br><span class="line"><span class="comment">//        JSONObject jsonObject = weChatPayUtil.pay(</span></span><br><span class="line"><span class="comment">//                ordersPaymentDTO.getOrderNumber(), //商户订单号</span></span><br><span class="line"><span class="comment">//                new BigDecimal(0.01), //支付金额，单位 元</span></span><br><span class="line"><span class="comment">//                &quot;苍穹外卖订单&quot;, //商品描述</span></span><br><span class="line"><span class="comment">//                user.getOpenid() //微信用户的openid</span></span><br><span class="line"><span class="comment">//        );</span></span><br><span class="line">        <span class="comment">//生成空jsonObject</span></span><br><span class="line">        JSONObject jsonObject = new JSONObject();</span><br></pre></td></tr></table></figure><p>如图所示：<br><img src="/source/_posts/imgs/1.png" alt="跳过调用微信支付接口"></p><h2 id="修改-user下的orderController的payment-方法直接更新订单状态"><a href="#修改-user下的orderController的payment-方法直接更新订单状态" class="headerlink" title="修改 user下的orderController的payment 方法直接更新订单状态"></a>修改 user下的orderController的payment 方法直接更新订单状态</h2><p>在user下的orderController的payment 方法中直接调用orderService.paySuccess方<br>法，传入订单号ordersPaymentDTO.getOrderNumber()，直接更新订单的状态。</p><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//模拟交易成功，修改订单状态</span></span><br><span class="line">orderService.paySuccess(ordersPaymentDTO.getOrderNumber());</span><br></pre></td></tr></table></figure><p>如图所示：<br><a href="source/_posts/imgs/1.png">在这里插入图片描述</a></p><h2 id="修改微信小程序代码直接跳转至成功页面"><a href="#修改微信小程序代码直接跳转至成功页面" class="headerlink" title="修改微信小程序代码直接跳转至成功页面"></a>修改微信小程序代码直接跳转至成功页面</h2><p>修改 pages.pay.index.js 文件，<br>在小程序前端，支付页面点击支付后直接回调支付成功页面<br>首先，找到pages文件夹下的pay下的index.js文件<br><a href="https://img-blog.csdnimg.cn/3027edf26e8e4519a7d0767a4cdb8764.png">在这里插入图片描述</a><br>其次，按快捷键 Ctrl + F 搜索 handleSave  定位到具体位置<br>如下图所示，注释原来的代码，在具体位置更换代码<br><a href="https://img-blog.csdnimg.cn/35c733dbbafa4206b4f622b841de3a7f.png">在这里插入图片描述</a></p><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (res.code === <span class="number">1</span>) &#123;</span><br><span class="line">      wx.showModal(&#123;</span><br><span class="line">        title: <span class="string">&#x27;提示&#x27;</span>,</span><br><span class="line">        content: <span class="string">&#x27;支付成功&#x27;</span>,</span><br><span class="line">        success:function()&#123;</span><br><span class="line">          uni.redirectTo(&#123;url: <span class="string">&#x27;/pages/success/index?orderId=&#x27;</span> + _this.orderId &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;)</span><br><span class="line">      console.<span class="built_in">log</span>(<span class="string">&#x27;支付成功!&#x27;</span>)</span><br></pre></td></tr></table></figure><hr><h1 id="效果"><a href="#效果" class="headerlink" title="效果"></a>效果</h1><p>在微信小程序下单后点击支付可以直接支付成功，数据库中订单的状态也更新成功。</p>]]></content>
     
@@ -30,15 +30,19 @@
     
     
     
+    <category term="Demo" scheme="http://example.com/categories/Demo/"/>
+    
+    
+    <category term="DemoTag2" scheme="http://example.com/tags/DemoTag2/"/>
     
   </entry>
   
   <entry>
     <title>Hello World</title>
-    <link href="http://example.com/2023/10/02/hello-world/"/>
-    <id>http://example.com/2023/10/02/hello-world/</id>
+    <link href="http://example.com/posts/hello-world/"/>
+    <id>http://example.com/posts/hello-world/</id>
     <published>2023-10-02T06:47:55.275Z</published>
-    <updated>2023-10-02T06:47:55.275Z</updated>
+    <updated>2023-10-03T07:07:04.999Z</updated>
     
     <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>]]></content>
     
@@ -50,6 +54,10 @@
     
     
     
+    <category term="Demo" scheme="http://example.com/categories/Demo/"/>
+    
+    
+    <category term="DemoTag1" scheme="http://example.com/tags/DemoTag1/"/>
     
   </entry>
   
